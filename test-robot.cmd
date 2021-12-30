@@ -1,0 +1,2 @@
+echo PROGRAMA ABRIU
+pause
