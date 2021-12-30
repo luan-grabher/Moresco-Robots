@@ -21,7 +21,7 @@ calls = pd.read_sql_query("SELECT * FROM calls WHERE started_at IS NULL AND ende
 #For each call
 for call in calls.itertuples():
     #Get the robot from the call
-    robot = pd.read_sql_query("SELECT * FROM robots WHERE id = ?", conn, params=(call.robot,))
+    robot = pd.read_sql_query("SELECT * FROM robots WHERE id = ?", conn, params=(call.robot,)).iloc[0]
 
     #If the robot has parameters
     if robot.with_parameters_file == 1:
@@ -66,14 +66,18 @@ for call in calls.itertuples():
         #If the robot file extension is .bat
         elif robot_extension == 'bat':
             #Execute the bat with the command 'cmd'
-            os.system('cmd {} {}'.format(robot_path, call.id))
+            os.system('{} {}'.format(robot_path, call.id))
+        #If the robot file extension is .cmd
+        elif robot_extension == 'cmd':
+            #Execute the cmd with the command 'cmd'
+            os.system('{} {}'.format(robot_path, call.id))
         #If the robot file extension is .xlsm
         elif robot_extension == 'xlsm':
             #Execute the excel with the command 'excel'
             os.system('excel {} {}'.format(robot_path, call.id))
 
     #Update the call with the started_at = now
-    conn.execute("UPDATE calls SET started_at = datetime('now') WHERE id = ?", (call.id,))
+    #conn.execute("UPDATE calls SET started_at = datetime('now') WHERE id = ?", (call.id,))
 
     #Commit the changes
     conn.commit()
@@ -82,4 +86,3 @@ for call in calls.itertuples():
     if robot.with_parameters_file == 1:
         #wait 30 seconds
         os.system('sleep 30')
-
