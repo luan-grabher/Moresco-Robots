@@ -24,7 +24,7 @@ import webbrowser
 # Get config of 'moresco-robots.ini'
 from configparser import ConfigParser
 config = ConfigParser()
-config.read('./moresco-robots.ini')
+config.read('../moresco-robots.ini')
 
 # Connect to database.path on config and get all robots with sqlite3 and pandas
 conn = sqlite3.connect(config['database']['path'])

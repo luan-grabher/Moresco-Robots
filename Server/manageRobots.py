@@ -28,7 +28,7 @@ import datetime
 # Import the config file
 import configparser
 config = configparser.ConfigParser()
-print(config.read("./moresco-robots.ini"))
+print(config.read("../moresco-robots.ini"))
 
 # Get the list of robots with sqlite3 database on config 'database.path'
 conn = sqlite3.connect(config['database']['path'])

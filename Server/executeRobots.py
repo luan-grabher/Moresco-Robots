@@ -10,7 +10,7 @@ import os
 
 #Get the configuration of 'moresco-robots.ini' file
 config = configparser.ConfigParser()
-config.read('./moresco-robots.ini')
+config.read('../moresco-robots.ini')
 
 #Connect to the database with the config 'database.path'
 conn = sqlite3.connect(config['database']['path'])
