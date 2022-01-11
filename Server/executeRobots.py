@@ -103,7 +103,7 @@ for call in calls.itertuples():
                     #change the started_at of the call to now in sql format
                     conn.execute("UPDATE calls SET started_at = datetime('now') WHERE id = ?", (call.id,))
                     #commit the changes
-                    conn.commit()
+                    #conn.commit()
 
                     #break the loop
                     break

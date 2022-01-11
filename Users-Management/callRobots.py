@@ -195,9 +195,13 @@ class CallRobots():
 
     # Function to show parameters of robot using table 'robots_parameters', for that robot.
     def showParameters(self):
+        # Convert robots pandas dataframe to list
+        robotsList = robots.to_dict('records')
+
         # Get robot of robots with robot selected on robotCombobox
-        self.robot = robots.iloc(self.robotCombobox.current())[0]
- 
+        self.robot = robotsList[self.robotCombobox.current()]
+        
+
         # Empty the window
         for widget in self.window.winfo_children():
             widget.destroy()
@@ -262,7 +266,7 @@ class CallRobots():
             parameterEntry.pack()                        
 
             # Add parameter to form_parameters with name = row['parameter_name'] and value = parameterEntry
-            self.form_parameters.append((row['name'], parameterEntry))
+            self.form_parameters.append((row['parameter_name'], parameterEntry))
 
         # Button 'Chamar', with command 'callRobot'
         callButton = tk.Button(self.window, text='Chamar', command=self.callRobot, font=('Arial', 12),pady=10)

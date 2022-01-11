@@ -109,7 +109,7 @@ def save_robot(name, path, description, department, enterprise):
     #Add robots_parameters table with the id of the robot saved, and the parameters
     for param in params:
         #Create sql query to save the robot parameters
-        sql = "INSERT INTO robots_parameters (robot, name, type, default_value) VALUES ('" + param['robot'] + "', '" + param['parameter_name'] + "', '" + param['type'] + "', '" + param['default_value'] + "')"
+        sql = "INSERT INTO robots_parameters (robot, name, parameter_name , type, default_value) VALUES ('" + param['robot'] + "', '"+ param['name'] + "', '" + param['parameter_name'] + "', '" + param['type'] + "', '" + param['default_value'] + "')"
         #Execute the query
         conn.execute(sql)
 

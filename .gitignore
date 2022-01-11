@@ -1,3 +1,7 @@
+#Robots in Robots
+Robots/Java/
+Robots/Python/*.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
