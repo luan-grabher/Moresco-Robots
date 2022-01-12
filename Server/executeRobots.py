@@ -6,6 +6,7 @@ import pandas as pd
 import configparser
 #import os
 import os
+import json
 
 
 #Get the configuration of 'moresco-robots.ini' file
@@ -30,9 +31,6 @@ for call in calls.itertuples():
 
         #If the robot has parameters
         if robot.with_parameters_file == 1:
-            #Get json from the call
-            json = call.json
-
             #Get the parameters file path
             parameters_file_path = config['parameters']['path']
             #If the file exists, delete it
@@ -42,18 +40,21 @@ for call in calls.itertuples():
             #create a new file to save the parameters
             parameters_file = open(parameters_file_path, 'w')
 
-            #Decode the json
-            parameters = json.decode('utf-8')
+            #parameters = array of 'json_parameters' of call
+            parameters = json.loads(call.json_parameters)
 
-            #add 'idTarefa' to the parameters
-            parameters['idTarefa'] = call.id
+            #write '[idTarefa=call.id]/n' in the file
+            parameters_file.write('[idTarefa=' + str(call.id) + ']\n')
             
             #For each parameter, convert to '[parameter=value]' and write in the file
-            for parameter in parameters.itertuples():
-                #Write the parameter in the file
-                parameters_file.write('[{}={}]\n'.format(parameter.name, parameter.value))
+            for parameter in parameters:       
+                parameters_file.write('[{}={}]\n'.format(parameter, str(parameters[parameter])))
+
             #Close the file
-            parameters_file.close()  
+            parameters_file.close()
+
+            #print the content of the file
+            print(open(parameters_file_path).read())
         
         #Get the robot path
         robot_path = robot.path
