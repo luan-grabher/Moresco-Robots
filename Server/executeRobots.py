@@ -8,6 +8,9 @@ import configparser
 import os
 import json
 
+#import time
+import time
+
 
 #Get the configuration of 'moresco-robots.ini' file
 config = configparser.ConfigParser()
@@ -43,12 +46,12 @@ for call in calls.itertuples():
             #parameters = array of 'json_parameters' of call
             parameters = json.loads(call.json_parameters)
 
-            #write '[idTarefa=call.id]/n' in the file
-            parameters_file.write('[idTarefa=' + str(call.id) + ']\n')
+            #write '[idTarefa:call.id]/n' in the file
+            parameters_file.write('[idTarefa:' + str(call.id) + ']\n')
             
-            #For each parameter, convert to '[parameter=value]' and write in the file
+            #For each parameter, convert to '[parameter:value]' and write in the file
             for parameter in parameters:       
-                parameters_file.write('[{}={}]\n'.format(parameter, str(parameters[parameter])))
+                parameters_file.write('[{}:{}]\n'.format(parameter, str(parameters[parameter])))
 
             #Close the file
             parameters_file.close()
@@ -63,6 +66,9 @@ for call in calls.itertuples():
         if os.path.exists(robot_path):
             #Get the robot file extension
             robot_extension = robot_path.split('.')[-1]
+
+            #go to the parent directory of the robot file
+            os.chdir(os.path.dirname(robot_path))
 
             #If the robot file extension is .jar
             if robot_extension == 'jar':
@@ -102,12 +108,12 @@ for call in calls.itertuples():
                 #If the file has the text 'usado'
                 if 'usado' in parameters_file_text:
                     #change the started_at of the call to now in sql format
-                    conn.execute("UPDATE calls SET started_at = datetime('now') WHERE id = ?", (call.id,))
+                    conn.execute("UPDATE calls SET started_at = ? WHERE id = ?", (time.strftime('%Y-%m-%d %H:%M:%S'), call.id))
                     #commit the changes
-                    #conn.commit()
+                    conn.commit()
 
                     #break the loop
                     break
                 
                 #Wait 1 second
-                os.times.sleep(1)
+                time.sleep(1)
