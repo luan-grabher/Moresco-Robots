@@ -287,7 +287,7 @@ def edit_robot():
 
                         #Input 'Tipo' with anchor 'center', type of the parameter
                         Label(gui_add_parameter, text='Tipo:').pack(anchor='center')
-                        type = ttk.Combobox(gui_add_parameter, values=['int', 'float', 'string', 'boolean'], state='readonly')
+                        type = ttk.Combobox(gui_add_parameter, values=['int', 'float', 'string', 'boolean','hidden', 'select','date'], state='readonly')
                         type.pack(anchor='center', fill='x', padx=50, pady=10)
 
                         #Input 'Nome do Parametro' with anchor 'center', parameter_name of the parameter
@@ -334,7 +334,7 @@ def edit_robot():
 
                         #Input 'Tipo' with anchor 'center', type of the parameter -> int, float, string, boolean
                         Label(gui_parameter, text='Tipo:').pack(anchor='center')
-                        type = ttk.Combobox(gui_parameter, values=['int', 'float', 'string', 'boolean'], state='readonly')
+                        type = ttk.Combobox(gui_parameter, values=['int', 'float', 'string', 'boolean','hidden', 'select','date'], state='readonly')
                         type.pack(anchor='center', fill='x', padx=50, pady=10)
                         type.set(parameter['type'])
 

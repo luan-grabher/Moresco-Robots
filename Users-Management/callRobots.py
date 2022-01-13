@@ -20,6 +20,7 @@ from tkinter import messagebox
 from tkinter import filedialog
 import json
 import webbrowser
+from tkinter import DateEntry
 
 # Get config of 'moresco-robots.ini'
 from configparser import ConfigParser
@@ -254,6 +255,15 @@ class CallRobots():
             elif row['type'] == 'string':
                 #set default value
                 parameterEntry.insert(0, row['default_value'])
+            #if type is date, DateEntry with default value
+            elif row['type'] == 'date':
+                parameterEntry = DateEntry(self.window, width=30, font=('Arial', 12), date_pattern='dd/mm/yyyy', state='readonly')
+                parameterEntry.pack()
+                parameterEntry.insert(0, row['default_value'])
+            #if type is select, show a combobox with options in 'default_value', and select the first option
+            elif row['type'] == 'select':
+                parameterEntry = ttk.Combobox(self.window, values=list(row['default_value'].split(';')), state='readonly', width=30, font=('Arial', 12))
+                parameterEntry.current(0)
             #else type is hidden
             elif row['type'] == 'hidden':
                 #set default value
@@ -263,8 +273,11 @@ class CallRobots():
                 parameterLabel.pack_forget()
 
             #pack the entry
-            parameterEntry.pack()                        
+            parameterEntry.pack()
 
+            #space between parameters
+            tk.Label(self.window, text='', font=('Arial', 12)).pack()            
+            
             # Add parameter to form_parameters with name = row['parameter_name'] and value = parameterEntry
             self.form_parameters.append((row['parameter_name'], parameterEntry))
 
@@ -288,7 +301,11 @@ class CallRobots():
             # If the value is 'Sim' or 'Não', convert to boolean and add to parameters
             elif parameter[1].get() == 'Sim' or parameter[1].get() == 'Não':
                 #convert to boolean
-                parameters[parameter[0]] = parameter[1].get() == 'Sim'            
+                parameters[parameter[0]] = parameter[1].get() == 'Sim'
+            #if the value is in format 'dd/mm/yyyy', convert to sql format and add to parameters
+            if parameter[1].get() in format('dd/mm/yyyy'):
+                #convert to sql format
+                parameters[parameter[0]] = datetime.strptime(parameter[1].get(), '%d/%m/%Y').strftime('%Y-%m-%d')
             #else put value of entry in parameters
             else:
                 parameters[parameter[0]] = parameter[1].get()
