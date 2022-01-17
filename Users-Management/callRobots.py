@@ -20,7 +20,7 @@ from tkinter import messagebox
 from tkinter import filedialog
 import json
 import webbrowser
-from tkinter import DateEntry
+from tkcalendar import DateEntry
 
 # Get config of 'moresco-robots.ini'
 from configparser import ConfigParser

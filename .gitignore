@@ -1,6 +1,8 @@
 #Robots in Robots
 Robots/Java/
 Robots/Python/*.py
+Robots/Excel
+Robots/Pasta Antiga
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

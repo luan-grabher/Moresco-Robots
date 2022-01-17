@@ -42,7 +42,7 @@ def verify():
                         # Close the file
                         html_file.close()
                         # Delete the file
-                        # os.remove(html_file_path)
+                        os.remove(html_file_path)
 
                         # Get the return json
                         return_json = json.dumps({'html': html_text})
