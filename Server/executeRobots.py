@@ -89,7 +89,7 @@ for call in calls.itertuples():
             #If the robot file extension is .xlsm
             elif robot_extension == 'xlsm':
                 #Execute the excel with the command 'excel'
-                os.system('excel {} {}'.format(robot_path, call.id))
+                os.system('excel {}'.format(robot_path))
 
         #Commit the changes
         conn.commit()
