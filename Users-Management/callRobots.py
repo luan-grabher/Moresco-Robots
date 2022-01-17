@@ -196,11 +196,18 @@ class CallRobots():
 
     # Function to show parameters of robot using table 'robots_parameters', for that robot.
     def showParameters(self):
-        # Convert robots pandas dataframe to list
+        #  Convert robots pandas dataframe to list
         robotsList = robots.to_dict('records')
+
+        # Remove of robots array the robots that are not in the department and enterprise
+        robotsList = [x for x in robotsList if x['department'] == self.department and x['enterprise'] == self.enterprise]
 
         # Get robot of robots with robot selected on robotCombobox
         self.robot = robotsList[self.robotCombobox.current()]
+
+        #print position of robot
+        print("Robô escolhido: " + self.robot['name'])
+        print(self.robot)
         
 
         # Empty the window
@@ -210,76 +217,82 @@ class CallRobots():
         # Get parameters of robot
         parameters = pd.read_sql_query("SELECT * FROM robots_parameters WHERE robot = '" + str(self.robot['id']) + "'", conn)
 
-        # For each parameter, show a label and a entry with 'default_value' and restrict the entry with 'type' (int, float, string, boolean(Sim/Não))
-        for index, row in parameters.iterrows():
-            # Label with parameter name
-            parameterLabel = tk.Label(self.window, text=row['name'], font=('Arial', 12), anchor='center')
-            parameterLabel.pack()
+        if not parameters.empty:
+            # For each parameter, show a label and a entry with 'default_value' and restrict the entry with 'type' (int, float, string, boolean(Sim/Não))
+            for index, row in parameters.iterrows():
+                # Label with parameter name
+                parameterLabel = tk.Label(self.window, text=row['name'], font=('Arial', 12), anchor='center')
+                parameterLabel.pack()
 
-            # Entry with parameter value
-            parameterEntry = tk.Entry(self.window, width=30, font=('Arial', 12))
-            
-            #If type is int
-            if row['type'] == 'int':
-                #if the name is 'mes', comboBox with months
-                if row['name'] == 'mes':                    
-                    parameterEntry = ttk.Combobox(self.window, values=list(months), state='readonly', width=30, font=('Arial', 12))
-                    parameterEntry.current(int(row['default_value'])-1)
-                    parameterEntry.pack()
-                #if the name is 'ano', comboBox with last 5 years until next year
-                elif row['name'] == 'ano':
-                    years = [str(year) for year in range(int(row['default_value'])-5, int(row['default_value'])+2)]
-                    parameterEntry = ttk.Combobox(self.window, values=list(years), state='readonly', width=30, font=('Arial', 12))
-                    #select current year
-                    parameterEntry.current(int(row['default_value'])-int(row['default_value'])+5)
+                # Entry with parameter value
+                parameterEntry = tk.Entry(self.window, width=30, font=('Arial', 12))
+                
+                print('Parameter: ' + row['parameter_name'])
+                print('Type: ' + row['type'])
+                print('Default value: ' + str(row['default_value']))
 
+
+                #If type is int
+                if row['type'] == 'int':
+                    #if the name is 'mes', comboBox with months
+                    if row['parameter_name'] == 'mes':
+                        parameterEntry = ttk.Combobox(self.window, values=list(months), state='readonly', width=30, font=('Arial', 12))
+                        parameterEntry.current(int(row['default_value'])-1)
+                        parameterEntry.pack()
+                    #if the name is 'ano', comboBox with last 5 years until next year
+                    elif row['parameter_name'] == 'ano':
+                        years = [str(year) for year in range(int(row['default_value'])-5, int(row['default_value'])+2)]
+                        parameterEntry = ttk.Combobox(self.window, values=list(years), state='readonly', width=30, font=('Arial', 12))
+                        #select current year
+                        parameterEntry.current(int(row['default_value'])-int(row['default_value'])+5)
+
+                        parameterEntry.pack()
+                    else:
+                        #Restrict the entry with 'validate'
+                        parameterEntry = tk.Entry(self.window, width=30, font=('Arial', 12), validate='key', validatecommand=(self.window.register(self.validate), '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W'))
+                        parameterEntry.insert(END, row['default_value'])
+                        
+                #if type is float
+                elif row['type'] == 'float':
+                    #Restrict the entry with 'validate_float'
+                    parameterEntry = tk.Entry(self.window, width=30, font=('Arial', 12), validate='key', validatecommand=(self.window.register(self.validateFloat), '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W'))
+                    #set default value
+                    parameterEntry.insert(0, float(row['default_value']))
+                #if type is boolean, select 'Sim' or 'Não'
+                elif row['type'] == 'boolean':
+                    #Combobox with 'Sim' and 'Não'
+                    parameterEntry = ttk.Combobox(self.window, values=['Não', 'Sim'], state='readonly', width=30, font=('Arial', 12))
+                    #select value                
+                    parameterEntry.current(row['default_value'])
+                #if type is string
+                elif row['type'] == 'string':
+                    #set default value
+                    parameterEntry.insert(0, row['default_value'])
+                #if type is date, DateEntry with default value
+                elif row['type'] == 'date':
+                    parameterEntry = DateEntry(self.window, width=30, font=('Arial', 12), date_pattern='dd/mm/yyyy', state='readonly')
                     parameterEntry.pack()
-                else:
-                    #Restrict the entry with 'validate'
-                    parameterEntry = tk.Entry(self.window, width=30, font=('Arial', 12), validate='key', validatecommand=(self.window.register(self.validate), '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W'))
-                    parameterEntry.insert(END, row['default_value'])
-                    
-            #if type is float
-            elif row['type'] == 'float':
-                #Restrict the entry with 'validate_float'
-                parameterEntry = tk.Entry(self.window, width=30, font=('Arial', 12), validate='key', validatecommand=(self.window.register(self.validateFloat), '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W'))
-                #set default value
-                parameterEntry.insert(0, float(row['default_value']))
-            #if type is boolean, select 'Sim' or 'Não'
-            elif row['type'] == 'boolean':
-                #Combobox with 'Sim' and 'Não'
-                parameterEntry = ttk.Combobox(self.window, values=['Não', 'Sim'], state='readonly', width=30, font=('Arial', 12))
-                #select value                
-                parameterEntry.current(row['default_value'])
-            #if type is string
-            elif row['type'] == 'string':
-                #set default value
-                parameterEntry.insert(0, row['default_value'])
-            #if type is date, DateEntry with default value
-            elif row['type'] == 'date':
-                parameterEntry = DateEntry(self.window, width=30, font=('Arial', 12), date_pattern='dd/mm/yyyy', state='readonly')
+                    parameterEntry.insert(0, row['default_value'])
+                #if type is select, show a combobox with options in 'default_value', and select the first option
+                elif row['type'] == 'select':
+                    parameterEntry = ttk.Combobox(self.window, values=list(row['default_value'].split(';')), state='readonly', width=30, font=('Arial', 12))
+                    parameterEntry.current(0)
+                #else type is hidden
+                elif row['type'] == 'hidden':
+                    #set default value
+                    parameterEntry.insert(0, row['default_value'])
+                    #hide entry and label
+                    parameterEntry.pack_forget()
+                    parameterLabel.pack_forget()
+
+                #pack the entry
                 parameterEntry.pack()
-                parameterEntry.insert(0, row['default_value'])
-            #if type is select, show a combobox with options in 'default_value', and select the first option
-            elif row['type'] == 'select':
-                parameterEntry = ttk.Combobox(self.window, values=list(row['default_value'].split(';')), state='readonly', width=30, font=('Arial', 12))
-                parameterEntry.current(0)
-            #else type is hidden
-            elif row['type'] == 'hidden':
-                #set default value
-                parameterEntry.insert(0, row['default_value'])
-                #hide entry and label
-                parameterEntry.pack_forget()
-                parameterLabel.pack_forget()
 
-            #pack the entry
-            parameterEntry.pack()
-
-            #space between parameters
-            tk.Label(self.window, text='', font=('Arial', 12)).pack()            
-            
-            # Add parameter to form_parameters with name = row['parameter_name'] and value = parameterEntry
-            self.form_parameters.append((row['parameter_name'], parameterEntry))
+                #space between parameters
+                tk.Label(self.window, text='', font=('Arial', 12)).pack()            
+                
+                # Add parameter to form_parameters with name = row['parameter_name'] and value = parameterEntry
+                self.form_parameters.append((row['parameter_name'], parameterEntry))
 
         # Button 'Chamar', with command 'callRobot'
         callButton = tk.Button(self.window, text='Chamar', command=self.callRobot, font=('Arial', 12),pady=10)
@@ -303,7 +316,7 @@ class CallRobots():
                 #convert to boolean
                 parameters[parameter[0]] = parameter[1].get() == 'Sim'
             #if the value is in format 'dd/mm/yyyy', convert to sql format and add to parameters
-            if parameter[1].get() in format('dd/mm/yyyy'):
+            elif parameter[1].get() in format('dd/mm/yyyy'):
                 #convert to sql format
                 parameters[parameter[0]] = datetime.strptime(parameter[1].get(), '%d/%m/%Y').strftime('%Y-%m-%d')
             #else put value of entry in parameters
