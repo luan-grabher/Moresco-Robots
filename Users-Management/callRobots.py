@@ -279,14 +279,16 @@ class CallRobots():
                     parameterEntry.current(0)
                 #else type is hidden
                 elif row['type'] == 'hidden':
+                    parameterEntry = tk.Entry(self.window, width=30, font=('Arial', 12))
                     #set default value
                     parameterEntry.insert(0, row['default_value'])
-                    #hide entry and label
-                    parameterEntry.pack_forget()
-                    parameterLabel.pack_forget()
 
-                #pack the entry
-                parameterEntry.pack()
+                #if type is hidden, hide entry and label
+                if row['type'] == 'hidden':
+                    parameterLabel.pack_forget()
+                else:
+                    #pack the entry
+                    parameterEntry.pack()
 
                 #space between parameters
                 tk.Label(self.window, text='', font=('Arial', 12)).pack()            
