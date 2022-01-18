@@ -31,7 +31,7 @@ config.read('../moresco-robots.ini')
 conn = sqlite3.connect(config['database']['path'])
 
 # Get all robots from database with pandas
-robots = pd.read_sql_query("SELECT * FROM robots", conn)
+robots = pd.read_sql_query("SELECT * FROM robots order by name", conn)
 
 # List of unique departments
 departments = robots['department'].unique()
