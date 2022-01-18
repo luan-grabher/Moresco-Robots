@@ -33,10 +33,12 @@ conn = sqlite3.connect(config['database']['path'])
 # Get all robots from database with pandas
 robots = pd.read_sql_query("SELECT * FROM robots order by name", conn)
 
-# List of unique departments
+# List of unique departments ordered by name
 departments = robots['department'].unique()
-# List of unique enterprises
+departments.sort()
+# List of unique enterprises ordered by name
 enterprises = robots['enterprise'].unique()
+enterprises.sort()
 
 # Get user of system
 user = os.getlogin()

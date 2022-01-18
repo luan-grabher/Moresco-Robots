@@ -34,8 +34,11 @@ print(config.read("../moresco-robots.ini"))
 conn = sqlite3.connect(config['database']['path'])
 # Get the list of robots
 robots = pd.read_sql_query("SELECT * FROM robots order by name", conn)
-#List with unique enterprises
+#List with unique enterprises ordered
 enterprises = list(robots['enterprise'].unique())
+#sort the list of enterprises
+enterprises.sort()
+
 # List with departments - Nenhum, Contábil, Fiscal ou Pessoal
 departments = ['Nenhum', 'Contábil', 'Fiscal', 'Pessoal']
     
@@ -155,7 +158,7 @@ def edit_robot():
     #function to get the enterprises of the robots that are in the department
     def get_enterprises(department):
         #Get the enterprises of the robots that are in the department
-        sql = "SELECT DISTINCT enterprise FROM robots WHERE department = '" + department + "'"
+        sql = "SELECT DISTINCT enterprise FROM robots WHERE department = '" + department + "' order by enterprise"
         #With pandas, get the enterprises of the robots that are in the department
         enterprises = pd.read_sql_query(sql, conn)['enterprise'].values
         
