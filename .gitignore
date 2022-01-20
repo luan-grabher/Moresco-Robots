@@ -4,6 +4,8 @@ Robots/Python/*.py
 Robots/Excel
 Robots/Pasta Antiga
 
+Server/email_config.ini
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
