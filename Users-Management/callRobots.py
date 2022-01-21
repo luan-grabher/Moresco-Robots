@@ -245,10 +245,15 @@ class CallRobots():
                     elif row['parameter_name'] == 'ano':
                         #year now
                         yearNow = datetime.datetime.now().year
-                        years = [str(year) for year in range(yearNow - 2, yearNow + 1)]
+                        years = [str(year) for year in range(yearNow - 3, yearNow + 1)]
                         parameterEntry = ttk.Combobox(self.window, values=list(years), state='readonly', width=30, font=('Arial', 12))
-                        #select current year
-                        parameterEntry.current(int(row['default_value'])-int(row['default_value'])+5)
+                        #get index of current year in years
+                        indexYear = years.index(str(row['default_value']))
+                        #if not found, select the last year
+                        if indexYear == -1:
+                            indexYear = len(years) - 1
+                        #select current year                        
+                        parameterEntry.current(indexYear)
 
                         parameterEntry.pack()
                     else:
