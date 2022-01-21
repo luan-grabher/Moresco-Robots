@@ -1,6 +1,6 @@
 import time
 
-from Server.InsertCalls import execute_calls
+from InsertCalls import execute_calls
 
 today = time.strftime("%Y-%m-%d %H:%M:%S")
 

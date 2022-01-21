@@ -243,7 +243,9 @@ class CallRobots():
                         parameterEntry.pack()
                     #if the name is 'ano', comboBox with last 5 years until next year
                     elif row['parameter_name'] == 'ano':
-                        years = [str(year) for year in range(int(row['default_value'])-5, int(row['default_value'])+2)]
+                        #year now
+                        yearNow = datetime.datetime.now().year
+                        years = [str(year) for year in range(yearNow - 2, yearNow + 1)]
                         parameterEntry = ttk.Combobox(self.window, values=list(years), state='readonly', width=30, font=('Arial', 12))
                         #select current year
                         parameterEntry.current(int(row['default_value'])-int(row['default_value'])+5)
