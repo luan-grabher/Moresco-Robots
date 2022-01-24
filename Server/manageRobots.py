@@ -107,7 +107,7 @@ def save_robot(name, path, description, department, enterprise):
     #parameter with name='Ano', 'type'='int', 'default_value'= year, parameter_name='ano', robot=id
     params.append({'name':'Ano', 'type':'int', 'default_value': str(year), 'parameter_name':'ano', 'robot':str(id)})
     #parameter with name='Ini', 'type'='string', 'default_value'= 'ini.ini', parameter_name='ini', robot=id
-    params.append({'name':'Ini', 'type':'string', 'default_value': 'ini.ini', 'parameter_name':'ini', 'robot':str(id)})
+    params.append({'name':'Ini', 'type':'hidden', 'default_value': 'robot-', 'parameter_name':'ini', 'robot':str(id)})
 
     #Add robots_parameters table with the id of the robot saved, and the parameters
     for param in params:

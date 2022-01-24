@@ -57,6 +57,7 @@ for call in calls.itertuples():
             parameters_file.close()
 
             #print the content of the file
+            print("Content of the parameter file:")
             print(open(parameters_file_path).read())
         
         #Get the robot path
