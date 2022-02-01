@@ -6,6 +6,7 @@ import smtplib
 import sqlite3
 import time
 import pandas as pd
+from Email import send_email
 
 #import config of '../moresco-robots.ini'
 config = configparser.ConfigParser()
@@ -57,51 +58,13 @@ def execute_calls(calls_to_execute):
                 
                 print('Tarefa ' + str(call['id']) + ' finalizada com sucesso, enviando e-mail para ti01')
 
+                #convert json_return to json and get the 'html'
+                html = json.loads(json_return)['html']
+
                 #send email to 'ti01@moresco.cnt.br' with json_return
-                send_email('ti01@moresco.cnt.br', json_return)
+                send_email('ti01@moresco.cnt.br', html, 'Retorno Tarefa ' + str(call['id']))
         
         #wait 1 second
         time.sleep(1)
-
-#send email to and json_return to 
-def send_email(email, json_return):
-    #convert json string to json object
-    json_return = json.loads(json_return)
-    html = json_return['html']
-    
-    #get email config from 'email_config.ini'
-    mailconfig = configparser.ConfigParser()
-    mailconfig.read('email_config.ini')
-
-    #get username and password from section 'gmail' of 'email_config.ini'
-    username = mailconfig['gmail']['username']
-    password = mailconfig['gmail']['password']
-
-    print('Enviando e-mail para ' + email)
-    print('Mensagem: ' + html)
-    print('------------------------------------------------------')
-    print('Username: ' + username)
-    print('Password: ' + password)
-
-    try:
-        #create email
-        msg = MIMEMultipart()
-        msg['From'] = username
-        msg['To'] = email
-        msg['Subject'] = 'Moresco Robot'
-        msg.attach(MIMEText(html, 'html'))
-        
-        #create server
-        server = smtplib.SMTP_SSL('smtp.gmail.com', '587')
-        server.login(username, password)
-        text = msg.as_string()
-
-        print('Enviando e-mail para ' + email)
-
-        server.sendmail(username, email, text)
-        server.close()
-    except Exception as e:
-        print('Erro ao enviar e-mail para ' + email)
-        print(e)
 
             
