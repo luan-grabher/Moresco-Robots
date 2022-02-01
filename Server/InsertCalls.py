@@ -92,7 +92,7 @@ def send_email(email, json_return):
         msg.attach(MIMEText(html, 'html'))
         
         #create server
-        server = smtplib.SMTP_SSL('smtp.gmail.com', '465')
+        server = smtplib.SMTP_SSL('smtp.gmail.com', '587')
         server.login(username, password)
         text = msg.as_string()
 
