@@ -22,7 +22,7 @@ def execute_calls(calls_to_execute):
     for call in calls_to_execute:
         sql = "INSERT INTO calls (robot, user, created_at, json_parameters) VALUES (?, ?, ?, ?)"
         conn.execute(sql, (call['robot'], call['user'], call['created_at'], call['json_parameters']))
-        #conn.commit()
+        conn.commit()
 
     #For each call in calls to exec
     for call in calls_to_execute:
