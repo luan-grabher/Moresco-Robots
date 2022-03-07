@@ -53,8 +53,10 @@ class Robot():
                     #convert parameters_json in call to a dictionary
                     self.parameters = json.loads(self.call.json_parameters)
         else:
-            #If the call is empty
-            self.call = None
+            #If the call_id is empty
+
+            #call os empty
+            self.call = pd.DataFrame()
             self.robot = 0
             self.parameters = []
         
@@ -86,8 +88,8 @@ class Robot():
             #print 'html' key of json_return replacing '<br>' with '\n'
             print(json_return.replace('<br>', '\n'))
 
-            #if call is not empty
-            if self.call:
+            #if call is not None
+            if not self.call.empty:
                 #Get the current datetime in sql format (YYYY-MM-DD HH:MM:SS)
                 ended_at = pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')
                 #Sql to update the call ended_at as current datetime and json_return
