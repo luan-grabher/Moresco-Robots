@@ -196,6 +196,34 @@ class CallRobots():
         robotButton = tk.Button(self.window, text='Escolher', command=self.showParameters, font=('Arial', 12),pady=10)
         robotButton.pack()
 
+        #Description of robot
+        self.description = tk.Label(self.window, text='', font=('Arial', 12), anchor='center', wraplength=500)
+        #Define horizontal and vertical space between widgets
+        self.description.pack(padx=100, pady=20)
+
+        #call to show description with first robot
+        self.showDescription("")
+
+        #On change value of robotCombobox, call function 'showDescription'
+        self.robotCombobox.bind('<<ComboboxSelected>>', self.showDescription)
+
+    # Function to show description of robot in self.description
+    def showDescription(self, event):
+        # Get robot
+        self.robot = self.robotCombobox.get()
+
+        #Get robot by name, enterprise and department
+        robot = robots[(robots['name'] == self.robot) & (robots['enterprise'] == self.enterprise) & (robots['department'] == self.department)]
+
+        # Get description of robot
+        description = robot['description'].values[0]
+        #if last character is not '.', add '.'
+        if description[-1] != '.':
+            description += '.'
+        #Set description in self.description
+        self.description.configure(text=description)
+        
+
     # Function to show parameters of robot using table 'robots_parameters', for that robot.
     def showParameters(self):
         #  Convert robots pandas dataframe to list
