@@ -82,13 +82,9 @@ for call in calls.itertuples():
             elif robot_extension == 'py':
                 #Execute the python with the command 'py'
                 os.system('py {} {}'.format(robot_path, call.id))
-            #If the robot file extension is .bat
-            elif robot_extension == 'bat':
+            #If the robot file extension is .bat or .cmd
+            elif robot_extension == 'bat' || robot_extension == 'cmd':
                 #Execute the bat with the command 'cmd'
-                os.system('{} {}'.format(robot_path, call.id))
-            #If the robot file extension is .cmd
-            elif robot_extension == 'cmd':
-                #Execute the cmd with the command 'cmd'
                 os.system('{} {}'.format(robot_path, call.id))
             #If the robot file extension is .xlsm
             elif robot_extension == 'xlsm':
@@ -98,10 +94,19 @@ for call in calls.itertuples():
             '''
                 PARAMETERS FILE
             '''
+            print("Execução solicitada")
+            
             #If the robot has parameters
             if robot.with_parameters_file == 1:
+                print("Esperando resposta do robô...")                
+                counter = 0
+                
                 #wait the file has the text 'usado'
                 while True:
+                    #show counter of seconds waiting
+                    counter = counter + 1;
+                    print(counter, end="\r")
+                    
                     #Open the file
                     parameters_file = open(parameters_file_path, 'r')
                     #Read the file
