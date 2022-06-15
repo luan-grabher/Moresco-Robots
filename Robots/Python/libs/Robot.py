@@ -9,20 +9,27 @@ import sqlite3
 import pandas as pd
 import json
 
+config_path  = '../moresco-robots.ini'
+
+#Get config from 'moresco-robots.ini' file
+config = configparser.ConfigParser()
+config.read(config_path)
+
+#Connect to the database with the config 'database.path'
+conn = sqlite3.connect(config['database']['path'])
+
 class Robot():
     #Constructor with call_id
-    def __init__(self, call_id, config_path  = '../moresco-robots.ini'):
-        #Get config from 'moresco-robots.ini' file
-        config = configparser.ConfigParser()
-        config.read(config_path)
-
-        #Connect to the database with the config 'database.path'
-        conn = sqlite3.connect(config['database']['path'])
+    def __init__(self, call_id, database_path = None):
+        self.conn = conn
+        #If has database_path set conn to connect to the database with the database_path
+        if database_path:
+            self.conn = sqlite3.connect(database_path)            
 
         #if call_id is not None
         if call_id:                
             #Get the call from the database
-            self.call = pd.read_sql_query("SELECT * FROM calls WHERE id = ?", conn, params=(call_id,))
+            self.call = pd.read_sql_query("SELECT * FROM calls WHERE id = ?", self.conn, params=(call_id,))
             self.robot = 0
             self.parameters = []
 
@@ -36,14 +43,14 @@ class Robot():
                 #Sql to update the call started_at as current datetime
                 sql = "UPDATE calls SET started_at = ? WHERE id = ?"
                 #Execute the sql
-                conn.execute(sql, (str(self.call.started_at), str(self.call.id)))
+                self.conn.execute(sql, (str(self.call.started_at), str(self.call.id)))
                 #Commit the changes
-                conn.commit()
+                self.conn.commit()
 
                 #SQL query to get the robot from the call
                 sql = "SELECT * FROM robots WHERE id = " + str(self.call.robot)
                 #Get the robot from the database
-                robot = pd.read_sql_query(sql, conn)
+                robot = pd.read_sql_query(sql, self.conn)
 
                 #If the robot is not empty
                 if not robot.empty:
@@ -83,7 +90,7 @@ class Robot():
                         json_return = json.dumps({'html': json_return})
                 except:
                     #if string is not a json, convert it to json with 'html' as key
-                    json_return = '{"html": "' + json_return + '"}'
+                    json_return = json.dumps({'html': json_return})
             
             #print 'html' key of json_return replacing '<br>' with '\n'
             print(json_return.replace('<br>', '\n'))
@@ -95,9 +102,9 @@ class Robot():
                 #Sql to update the call ended_at as current datetime and json_return
                 sql = "UPDATE calls SET json_return = ?, ended_at = ? WHERE id = ?"
                 #Execute the sql
-                conn.execute(sql, (str(json_return), str(ended_at), str(self.call.id)))
+                self.conn.execute(sql, (str(json_return), str(ended_at), str(self.call.id)))
                 #Commit the changes
-                conn.commit()
+                self.conn.commit()
 
                 print('Call ' + str(self.call.id) + ' ended at ' + str(ended_at))
             else:

@@ -5,15 +5,17 @@ import pandas as pd
 #Import configparser
 import configparser
 #import os
-import os
+import os, sys
 import json
 import subprocess
 
 #import time
 import time
 
-#import Robot
-from ..Robots.Python.libs.Robot import Robot
+#import Robot upping two levels
+p = os.path.abspath('..') # get parent directory
+sys.path.insert(1, p) # add current directory to path
+from Robots.Python.libs.Robot import Robot
 
 
 #Get the configuration of 'moresco-robots.ini' file
@@ -99,7 +101,9 @@ for call in calls.itertuples():
 
             #Call the command
             processo = subprocess.Popen(command, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-            output = processo.stdout.read()            
+            output = processo.stdout.read()
+            #remove b' from the output
+            output = output.decode('utf-8')        
             
             '''
                 PARAMETERS FILE
@@ -139,7 +143,7 @@ for call in calls.itertuples():
                     #Instantiate the robot to set started_at
                     call = Robot(call.id)
                     #Set return to output of console
-                    call.setReturn(output)
+                    call.setReturn(str(output))
         else:
             #set message return
             message_return = "Arquivo do robô '", robot_path, "' não encontrado, contate o programador"
