@@ -10,6 +10,7 @@ Robots/Pasta Antiga
 Server/email_config.ini
 parametros.txt
 moresco-robots.ini
+moresco-robots.sqlite
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
