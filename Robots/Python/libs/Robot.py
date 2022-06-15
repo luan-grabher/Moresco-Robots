@@ -9,16 +9,16 @@ import sqlite3
 import pandas as pd
 import json
 
-#Get config from 'moresco-robots.ini' file
-config = configparser.ConfigParser()
-config.read('../moresco-robots.ini')
-
-#Connect to the database with the config 'database.path'
-conn = sqlite3.connect(config['database']['path'])
-
 class Robot():
     #Constructor with call_id
-    def __init__(self, call_id):
+    def __init__(self, call_id, config_path  = '../moresco-robots.ini'):
+        #Get config from 'moresco-robots.ini' file
+        config = configparser.ConfigParser()
+        config.read(config_path)
+
+        #Connect to the database with the config 'database.path'
+        conn = sqlite3.connect(config['database']['path'])
+
         #if call_id is not None
         if call_id:                
             #Get the call from the database
@@ -106,7 +106,3 @@ class Robot():
         else:
             #If json_return is empty, print it
             print("JSON_RETURN VAZIO")
-
-        
-
-    

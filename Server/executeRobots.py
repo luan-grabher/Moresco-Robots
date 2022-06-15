@@ -7,9 +7,13 @@ import configparser
 #import os
 import os
 import json
+import subprocess
 
 #import time
 import time
+
+#import Robot
+from ..Robots.Python.libs.Robot import Robot
 
 
 #Get the configuration of 'moresco-robots.ini' file
@@ -74,22 +78,28 @@ for call in calls.itertuples():
             #go to the parent directory of the robot file
             os.chdir(os.path.dirname(robot_path))
 
+            #String command to execute the robot
+            command = ''
             #If the robot file extension is .jar
             if robot_extension == 'jar':
                 #Execute the jar with the command 'java -jar'
-                os.system('java -jar {} {}'.format(robot_path, call.id))
+                command = 'java -jar {} {}'.format(robot_path, call.id)
             #If the robot file extension is .py
             elif robot_extension == 'py':
                 #Execute the python with the command 'py'
-                os.system('py {} {}'.format(robot_path, call.id))
+                command = 'python {} {}'.format(robot_path, call.id)
             #If the robot file extension is .bat or .cmd
             elif robot_extension == 'bat' or robot_extension == 'cmd':
                 #Execute the bat with the command 'cmd'
-                os.system('{} {}'.format(robot_path, call.id))
+                command = '{} {}'.format(robot_path, call.id)
             #If the robot file extension is .xlsm
             elif robot_extension == 'xlsm':
                 #Execute the excel with the command 'excel'
-                os.system('excel {}'.format(robot_path))
+                command = 'excel {}'.format(robot_path)
+
+            #Call the command
+            processo = subprocess.Popen(command, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+            output = processo.stdout.read()            
             
             '''
                 PARAMETERS FILE
@@ -102,7 +112,7 @@ for call in calls.itertuples():
                 counter = 0
                 
                 #wait the file has the text 'usado' while the counter is less than max start time
-                while counter < config['parameters']['max_start_time']:
+                while counter < int(config['parameters']['max_start_time']):
                     #show counter of seconds waiting
                     counter = counter + 1
                     print(counter, end="\r")
@@ -116,28 +126,31 @@ for call in calls.itertuples():
 
                     #If the file has the text 'usado'
                     if 'usado' in parameters_file_text:
-                        #change the started_at of the call to now in sql format
-                        conn.execute("UPDATE calls SET started_at = ? WHERE id = ?", (time.strftime('%Y-%m-%d %H:%M:%S'), call.id))
-                        #commit the changes
-                        conn.commit()
-
+                        #Instantiate the robot to set started_at
+                        Robot(call.id)
                         #break the loop
                         break
                     
                     #Wait 1 second
                     time.sleep(1)
+
+                #If the counter is greater than or equal max start time
+                if counter >= int(config['parameters']['max_start_time']):
+                    #Instantiate the robot to set started_at
+                    call = Robot(call.id)
+                    #Set return to output of console
+                    call.setReturn(output)
         else:
-            #json_return = '{"html":"Arquivo do robô não encontrado, contate o programador."}'
-            json_return = '{"html":"Arquivo do robô não encontrado, contate o programador."}'
-            #now in sql format
-            now = time.strftime('%Y-%m-%d %H:%M:%S')
-            #change the started_at and ended_at of the call to now in sql format
-            conn.execute("UPDATE calls SET started_at = ?, ended_at = ?, json_return = ? WHERE id = ?", (now, now, json_return, call.id))
-            #commit the changes
-            conn.commit()
+            #set message return
+            message_return = "Arquivo do robô '", robot_path, "' não encontrado, contate o programador"
+            
+            #instantiate a new robot
+            call = Robot(call.id)
+            #set the message return
+            call.setReturn(message_return)
 
             #print the error
-            print("Arquivo do robô '", robot_path, "' não encontrado.")
+            print(message_return)
 
         #Commit the changes
         conn.commit()
