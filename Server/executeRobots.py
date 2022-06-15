@@ -15,7 +15,7 @@ import time
 #import Robot upping two levels
 p = os.path.abspath('..') # get parent directory
 sys.path.insert(1, p) # add current directory to path
-from Robots.Python.libs.Robot import Robot
+from Robots.Python.lib.Robot import Robot
 
 
 #Get the configuration of 'moresco-robots.ini' file
