@@ -25,11 +25,27 @@ config.read('../moresco-robots.ini')
 #Connect to the database with the config 'database.path'
 conn = sqlite3.connect(config['database']['path'])
 
+
+def killCall(call_id, message):
+    try:
+        #instantiate a new robot
+        call = Robot(call_id)
+        #set the message return
+        call.setReturn(message)
+        print(message)
+
+        return True
+    except:
+        return False
+
+
 #Get all calls from the database where 'started_at' and 'ended_at' is NULL
-calls = pd.read_sql_query("SELECT * FROM calls WHERE started_at IS NULL AND ended_at IS NULL", conn)
+calls = pd.read_sql_query("SELECT * FROM calls WHERE started_at IS NULL AND ended_at IS NULL order by id ASC", conn)
 
 #For each call
 for call in calls.itertuples():
+    print("Executando chamada: " + str(call.id))
+
     #Get the robot from the call
     robot = pd.read_sql_query("SELECT * FROM robots WHERE id = ?", conn, params=(call.robot,))
 
@@ -37,6 +53,8 @@ for call in calls.itertuples():
     if not robot.empty:
         #get first row of the robot
         robot = robot.iloc[0]
+
+        print("A chamada pertence ao robo: " + str(robot.name)  +" (" + str(robot.id) + ")")
 
         #If the robot has parameters
         if robot.with_parameters_file == 1:
@@ -63,7 +81,7 @@ for call in calls.itertuples():
             parameters_file.close()
 
             #print the content of the file
-            print("Content of the parameter file:")
+            print("Conteudo escrito no arquivo de parametros:")
             print(open(parameters_file_path).read())
         
         #Get the robot path
@@ -94,67 +112,95 @@ for call in calls.itertuples():
             elif robot_extension == 'bat' or robot_extension == 'cmd':
                 #Execute the bat with the command 'cmd'
                 command = '{} {}'.format(robot_path, call.id)
-            #If the robot file extension is .xlsm
-            elif robot_extension == 'xlsm':
-                #Execute the excel with the command 'excel'
-                command = 'excel {}'.format(robot_path)
 
-            #Call the command
-            processo = subprocess.Popen(command, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-            output = processo.stdout.read()
-            #remove b' from the output
-            output = output.decode('utf-8')        
-            
-            '''
-                PARAMETERS FILE
-            '''
-            print("Execução solicitada")
-            
-            #If the robot has parameters
-            if robot.with_parameters_file == 1:
-                print("Esperando robô retornar que iniciou pelo arquivo de parametros...")
-                counter = 0
+            #If command is not empty (if the robot file extension is .jar or .py or .bat or .cmd)
+            if command != '':
+                #Call the command
+                processo = subprocess.Popen(command, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+                output = processo.stdout.read()
+                try:
+                    #remove b' from the output
+                    output = output.decode('utf-8')        
+                except:
+                    pass
                 
-                #wait the file has the text 'usado' while the counter is less than max start time
-                while counter < int(config['parameters']['max_start_time']):
-                    #show counter of seconds waiting
-                    counter = counter + 1
-                    print(counter, end="\r")
+                '''
+                    PARAMETERS FILE
+                '''
+                print("Execução solicitada")
+                
+                #If the robot has parameters, espera o robô avisar que executou
+                if robot.with_parameters_file == 1:
+                    print("Esperando robô retornar que iniciou pelo arquivo de parametros...")
+                    counter = 0
                     
-                    #Open the file
-                    parameters_file = open(parameters_file_path, 'r')
-                    #Read the file
-                    parameters_file_text = parameters_file.read()
-                    #Close the file
-                    parameters_file.close()
+                    #wait the file has the text 'usado' while the counter is less than max start time
+                    while counter < int(config['parameters']['max_start_time']):
+                        #show counter of seconds waiting
+                        counter = counter + 1
+                        print(counter, end="\r")
+                        
+                        #Open the file
+                        parameters_file = open(parameters_file_path, 'r')
+                        #Read the file
+                        parameters_file_text = parameters_file.read()
+                        #Close the file
+                        parameters_file.close()
 
-                    #If the file has the text 'usado'
-                    if 'usado' in parameters_file_text:
+                        #If the file has the text 'usado'
+                        if 'usado' in parameters_file_text:
+                            #Instantiate the robot to set started_at
+                            Robot(call.id)
+                            #break the loop
+                            break
+                        
+                        #Wait 1 second
+                        time.sleep(1)
+
+                    #If the counter is greater than or equal max start time
+                    if counter >= int(config['parameters']['max_start_time']):
                         #Instantiate the robot to set started_at
-                        Robot(call.id)
-                        #break the loop
-                        break
-                    
-                    #Wait 1 second
-                    time.sleep(1)
-
-                #If the counter is greater than or equal max start time
-                if counter >= int(config['parameters']['max_start_time']):
-                    #Instantiate the robot to set started_at
-                    call = Robot(call.id)
-                    #Set return to output of console
-                    call.setReturn(str(output))
+                        call = Robot(call.id)
+                        #Set return to output of console
+                        call.setReturn(str(output))
+            else:
+                killCall(call.id, "Arquivo do robô '", robot_path, "' não suportado")
         else:
-            #set message return
-            message_return = "Arquivo do robô '", robot_path, "' não encontrado, contate o programador"
-            
-            #instantiate a new robot
-            call = Robot(call.id)
-            #set the message return
-            call.setReturn(message_return)
-
-            #print the error
-            print(message_return)
+            killCall(call.id, "Arquivo do robô '", robot_path, "' não encontrado, contate o programador")
 
         #Commit the changes
         conn.commit()
+    else:
+        killCall(call.id, "Robô " + str(call.robot) + " não encontrado, contate o programador")
+
+#Get all calls from the database where 'started_at' not null and 'ended_at' is null
+calls = pd.read_sql_query("SELECT * FROM calls WHERE started_at IS NOT NULL AND ended_at IS NULL order by id ASC", conn)
+
+#For each call, verify if max time is reached
+for call in calls.itertuples():
+    print("Verificando tempo limite de execução da tarefa: " + str(call.id))
+
+    #Get started_at from the call as timestamp
+    started_at = pd.to_datetime(call.started_at)
+
+    #Get now as timestamp
+    now = pd.Timestamp.now()
+
+    #Get max time from the config
+    max_time_execution = int(config['parameters']['max_time_execution'])
+
+    #If the time between now and started_at is greater than max time execution
+    if (now - started_at).total_seconds() > max_time_execution:
+        #Create return message with the error
+        message_return = "Tempo de execução excedido, a tarefa foi cancelada"
+        json_return = json.dumps({'html': message_return})
+
+        ended_at = pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')
+        #Sql to update the call ended_at as current datetime and json_return
+        sql = "UPDATE calls SET json_return = ?, ended_at = ? WHERE id = ?"
+        #Execute the sql
+        conn.execute(sql, (str(json_return), str(ended_at), str(call.id)))
+        #Commit the changes
+        conn.commit()
+
+        print(str(call.id) + " - " + message_return)
