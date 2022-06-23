@@ -1,0 +1,16 @@
+# file: myapp.cfg
+
+[firebird.driver]
+servers = yasuo
+databases = dbname
+
+[yasuo]
+host = server_host
+user = SYSDBA
+password = masterkey
+
+[dbname]
+server = yasuo
+database = C:\path\to\db\database.sdb
+protocol = inet
+charset = win1252

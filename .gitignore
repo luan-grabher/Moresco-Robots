@@ -2,6 +2,7 @@
 Robots/Java/
 
 Robots/Python/*.py
+Robots/Python/database.ini
 !Robots/Python/lib
 
 Robots/Excel
