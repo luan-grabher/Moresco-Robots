@@ -385,9 +385,15 @@ class CallRobots():
         #for each widget in window, destroy it
         for widget in self.window.winfo_children():
             widget.destroy()
+            
+        #Get users able to show all
+        usersAbleShowAll = config['calls']['usersAbleShowAll'].split(";")
+        
+        #Construct where clause
+        where = "" if user in usersAbleShowAll else " where calls.user = '" + user + "' "
         
         #with pandas Get  robots.name and all colls on table 'calls' all calls of user descending by created_at
-        calls = pd.read_sql_query("SELECT robots.name, calls.* FROM calls INNER JOIN robots ON calls.robot = robots.id WHERE calls.user = '" + user + "' ORDER BY calls.created_at DESC", conn)
+        calls = pd.read_sql_query("SELECT robots.name, calls.* FROM calls INNER JOIN robots ON calls.robot = robots.id " + where + " ORDER BY calls.created_at DESC", conn)
 
         # Label with 'Chamados'
         callsLabel = tk.Label(self.window, text='Chamados (Clique para visualizar a resposta completa)', font=('Arial', 20), anchor='center')
