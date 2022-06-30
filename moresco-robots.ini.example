@@ -6,3 +6,5 @@ return_path = C:\Users\Moresco-Robots\Robots\OldRobotsReturns
 #Tempo maximo de espera de leitura do arquivo de parametros em segundos (60 = 1 minuto)
 max_start_time = 30
 max_time_execution = 3600
+[calls]
+usersAbleShowAll=userwindows1;userwindows2
