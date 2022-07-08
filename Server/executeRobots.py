@@ -120,7 +120,7 @@ for call in calls.itertuples():
                 output = processo.stdout.read()
                 try:
                     #remove b' from the output
-                    output = output.decode('utf-8')        
+                    output = output.decode('utf-8')
                 except:
                     pass
                 
