@@ -117,7 +117,7 @@ for call in calls.itertuples():
             #If command is not empty (if the robot file extension is .jar or .py or .bat or .cmd)
             if command != '':
                 #Call the command
-                subprocess.call(command, shell=True)
+                os.system(command)
 
                 #processo = subprocess.Popen(command, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
                 output = 'Nenhum Retorno' #processo.stdout.read()
