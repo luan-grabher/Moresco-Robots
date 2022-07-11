@@ -38,6 +38,37 @@ def killCall(call_id, message):
     except:
         return False
 
+#Get all calls from the database where 'started_at' not null and 'ended_at' is null
+calls = pd.read_sql_query("SELECT * FROM calls WHERE started_at IS NOT NULL AND ended_at IS NULL order by id ASC", conn)
+
+#For each call, verify if max time is reached
+for call in calls.itertuples():
+    print("Verificando tempo limite de execução da tarefa: " + str(call.id))
+
+    #Get started_at from the call as timestamp
+    started_at = pd.to_datetime(call.started_at)
+
+    #Get now as timestamp
+    now = pd.Timestamp.now()
+
+    #Get max time from the config
+    max_time_execution = int(config['parameters']['max_time_execution'])
+
+    #If the time between now and started_at is greater than max time execution
+    if (now - started_at).total_seconds() > max_time_execution:
+        #Create return message with the error
+        message_return = "Tempo de execução excedido, a tarefa foi cancelada"
+        json_return = json.dumps({'html': message_return})
+
+        ended_at = pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')
+        #Sql to update the call ended_at as current datetime and json_return
+        sql = "UPDATE calls SET json_return = ?, ended_at = ? WHERE id = ?"
+        #Execute the sql
+        conn.execute(sql, (str(json_return), str(ended_at), str(call.id)))
+        #Commit the changes
+        conn.commit()
+
+        print(str(call.id) + " - " + message_return)
 
 #Get all calls from the database where 'started_at' and 'ended_at' is NULL
 calls = pd.read_sql_query("SELECT * FROM calls WHERE started_at IS NULL AND ended_at IS NULL order by id ASC", conn)
@@ -168,35 +199,3 @@ for call in calls.itertuples():
         conn.commit()
     else:
         killCall(call.id, "Robô " + str(call.robot) + " não encontrado, contate o programador")
-
-#Get all calls from the database where 'started_at' not null and 'ended_at' is null
-calls = pd.read_sql_query("SELECT * FROM calls WHERE started_at IS NOT NULL AND ended_at IS NULL order by id ASC", conn)
-
-#For each call, verify if max time is reached
-for call in calls.itertuples():
-    print("Verificando tempo limite de execução da tarefa: " + str(call.id))
-
-    #Get started_at from the call as timestamp
-    started_at = pd.to_datetime(call.started_at)
-
-    #Get now as timestamp
-    now = pd.Timestamp.now()
-
-    #Get max time from the config
-    max_time_execution = int(config['parameters']['max_time_execution'])
-
-    #If the time between now and started_at is greater than max time execution
-    if (now - started_at).total_seconds() > max_time_execution:
-        #Create return message with the error
-        message_return = "Tempo de execução excedido, a tarefa foi cancelada"
-        json_return = json.dumps({'html': message_return})
-
-        ended_at = pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')
-        #Sql to update the call ended_at as current datetime and json_return
-        sql = "UPDATE calls SET json_return = ?, ended_at = ? WHERE id = ?"
-        #Execute the sql
-        conn.execute(sql, (str(json_return), str(ended_at), str(call.id)))
-        #Commit the changes
-        conn.commit()
-
-        print(str(call.id) + " - " + message_return)
