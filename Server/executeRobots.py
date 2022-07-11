@@ -53,6 +53,7 @@ for call in calls.itertuples():
     if not robot.empty:
         #get first row of the robot
         robot = robot.iloc[0]
+        print(robot)
 
         print("A chamada pertence ao robo: " + str(robot.name)  +" (" + str(robot.id) + ")")
 
@@ -116,8 +117,10 @@ for call in calls.itertuples():
             #If command is not empty (if the robot file extension is .jar or .py or .bat or .cmd)
             if command != '':
                 #Call the command
-                processo = subprocess.Popen(command, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-                output = processo.stdout.read()
+                subprocess.call(command, shell=True)
+
+                #processo = subprocess.Popen(command, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+                output = 'Nenhum Retorno' #processo.stdout.read()
                 try:
                     #remove b' from the output
                     output = output.decode('utf-8')
