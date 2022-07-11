@@ -118,14 +118,7 @@ for call in calls.itertuples():
             if command != '':
                 #Call the command
                 os.system(command)
-
-                #processo = subprocess.Popen(command, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-                output = 'Nenhum Retorno' #processo.stdout.read()
-                try:
-                    #remove b' from the output
-                    output = output.decode('utf-8')
-                except:
-                    pass
+                output = 'Nenhum Retorno'
                 
                 '''
                     PARAMETERS FILE
