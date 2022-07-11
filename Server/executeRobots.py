@@ -160,9 +160,9 @@ for call in calls.itertuples():
                         #Set return to output of console
                         call.setReturn(str(output))
             else:
-                killCall(call.id, "Arquivo do robô '", robot_path, "' não suportado")
+                killCall(call.id, "Arquivo do robô '" + robot_path + "' não suportado")
         else:
-            killCall(call.id, "Arquivo do robô '", robot_path, "' não encontrado, contate o programador")
+            killCall(call.id, "Arquivo do robô '" + robot_path + "' não encontrado, contate o programador")
 
         #Commit the changes
         conn.commit()
