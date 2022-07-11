@@ -55,7 +55,7 @@ for call in calls.itertuples():
         robot = robot.iloc[0]
         print(robot)
 
-        print("A chamada pertence ao robo: " + str(robot.name)  +" (" + str(robot.id) + ")")
+        print("A chamada pertence ao robo: " + str(robot['name'])  +" (" + str(robot.id) + ")")
 
         #If the robot has parameters
         if robot.with_parameters_file == 1:
