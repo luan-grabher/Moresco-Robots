@@ -144,6 +144,10 @@ for call in calls.itertuples():
             elif robot_extension == 'bat' or robot_extension == 'cmd':
                 #Execute the bat with the command 'cmd'
                 command = '{} {}'.format(robot_path, call.id)
+            #If the robot file extension is .xlsm
+            elif robot_extension == 'xlsm':
+                #Execute the excel with the command 'excel'
+                command = 'excel {}'.format(robot_path)
 
             #If command is not empty (if the robot file extension is .jar or .py or .bat or .cmd)
             if command != '':
