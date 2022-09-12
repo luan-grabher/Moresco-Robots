@@ -12,6 +12,8 @@ import subprocess
 #import time
 import time
 
+from torch import R
+
 #import Robot upping two levels
 p = os.path.abspath('..') # get parent directory
 sys.path.insert(1, p) # add current directory to path
@@ -152,6 +154,10 @@ for call in calls.itertuples():
 
             #If command is not empty (if the robot file extension is .jar or .py or .bat or .cmd)
             if command != '':
+                #Se for um robo com arquivo de parametros, define o started_at como agora
+                if robot.with_parameters_file == 1:
+                    Robot(call.id) #instantiate a new robot automatically set the started_at as now
+                
                 #Call the command
                 os.system(command)
                 output = 'Nenhum Retorno'
@@ -181,8 +187,6 @@ for call in calls.itertuples():
 
                         #If the file has the text 'usado'
                         if 'usado' in parameters_file_text:
-                            #Instantiate the robot to set started_at
-                            Robot(call.id)
                             #break the loop
                             break
                         
