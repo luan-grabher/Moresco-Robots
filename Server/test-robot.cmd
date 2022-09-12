@@ -1,0 +1,2 @@
+py executeRobots.py
+pause
