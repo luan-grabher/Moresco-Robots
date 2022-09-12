@@ -69,6 +69,7 @@ for call in calls.itertuples():
         conn.commit()
 
         print(str(call.id) + " - " + message_return)
+		
 
 #Get all calls from the database where 'started_at' and 'ended_at' is NULL
 calls = pd.read_sql_query("SELECT * FROM calls WHERE started_at IS NULL AND ended_at IS NULL order by id ASC", conn)
