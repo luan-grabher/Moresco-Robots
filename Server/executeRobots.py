@@ -65,7 +65,7 @@ for call in calls.itertuples():
         print(str(call.id) + " - " + message_return)
     else:
         print(str(call.id) + " - Tempo de execução dentro do limite")
-        print('tempo de execução: ' + str((now - started_at).total_seconds()))
+        #print('tempo de execução: ' + str((now - started_at).total_seconds()))
         print('tempo limite: ' + str(max_time_execution))        
 
 #Get all calls from the database where 'started_at' and 'ended_at' is NULL
