@@ -12,8 +12,6 @@ import subprocess
 #import time
 import time
 
-from torch import R
-
 #import Robot upping two levels
 p = os.path.abspath('..') # get parent directory
 sys.path.insert(1, p) # add current directory to path
