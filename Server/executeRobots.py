@@ -63,14 +63,10 @@ for call in calls.itertuples():
         killCall(call.id, message_return)
 
         print(str(call.id) + " - " + message_return)
-<<<<<<< HEAD
-		
-=======
     else:
         print(str(call.id) + " - Tempo de execução dentro do limite")
         #print('tempo de execução: ' + str((now - started_at).total_seconds()))
         print('tempo limite: ' + str(max_time_execution))        
->>>>>>> 6396162310ae8915d86223a5054a00e265fe8c0d
 
 #Get all calls from the database where 'started_at' and 'ended_at' is NULL
 calls = pd.read_sql_query("SELECT * FROM calls WHERE started_at IS NULL AND ended_at IS NULL order by id ASC", conn)
