@@ -68,7 +68,7 @@ for call in calls.itertuples():
 =======
     else:
         print(str(call.id) + " - Tempo de execução dentro do limite")
-        print('tempo de execução: ' + str((now - started_at).total_seconds()))
+        #print('tempo de execução: ' + str((now - started_at).total_seconds()))
         print('tempo limite: ' + str(max_time_execution))        
 >>>>>>> 6396162310ae8915d86223a5054a00e265fe8c0d
 
