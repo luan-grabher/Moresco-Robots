@@ -156,7 +156,8 @@ for call in calls.itertuples():
                     Robot(call.id) #instantiate a new robot automatically set the started_at as now
                 
                 #Call the command
-                subprocess.Popen(command, shell=True)
+                p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)                
+                
                 output = 'Nenhum Retorno'
                 
                 '''
